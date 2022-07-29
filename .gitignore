@@ -1,0 +1,13 @@
+# created by virtualenv automatically
+bin/
+lib/
+pyvenv.cfg
+curd/
+useradmin/__pycache__/
+useradmin/tests/__pycache__/
+backup.py
+main/__pycache__/
+.env
+include/
+__pycache__/
+.pytest_cache
