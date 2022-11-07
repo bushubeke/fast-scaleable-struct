@@ -2,7 +2,8 @@ from http import client
 import pytest
 import asyncio
 
-from ..main import create_dev_app
+from main import create_dev_app
+
 pytestmark = pytest.mark.oauth_end_tests
 
 # app=create_dev_app()

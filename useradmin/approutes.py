@@ -1,16 +1,16 @@
 
-import uuid
-from fastapi import APIRouter, Depends,HTTPException, status,Request
-from config import settings
-from passlib.hash import pbkdf2_sha512
-from datetime import datetime , timedelta,timezone
-from useradmin.models import *
-from useradmin.utils import *
-from sqlalchemy import select,update,delete
-from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
-from json import  dumps as jsondumps,JSONDecoder
 import jwt
-
+import uuid
+from json import  dumps as jsondumps,JSONDecoder
+from datetime import datetime , timedelta,timezone
+from fastapi import APIRouter, Depends,HTTPException, status,Request
+from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
+from passlib.hash import pbkdf2_sha512
+from sqlalchemy import select,update,delete
+from config import settings
+from useradmin.utils import *
+from useradmin.models import *
+from status import status
 ###########################################################
 apirouter = APIRouter()
 ##########################################################
@@ -30,7 +30,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 async def get_current_active_user(current_user: UserModelLogin=Depends(get_current_user)): 
     if current_user["disabled"] is True :
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Inactive user")
     return current_user
 
 ##########################################################
@@ -50,11 +50,11 @@ async def register_user(request : Request,user : UserModel,current_user :UserMod
         except Exception as e:
             await session.rollback()
             print(e)
-            raise HTTPException(status_code=500, detail="Message: Something Unexpected Happended")
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Message: Something Unexpected Happended")
         finally:
             await session.close()
     else:
-        raise HTTPException(status_code=401, detail="Message: you do not have the required privileges for this resource")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Message: you do not have the required privileges for this resource")
 
 @apirouter.get("/user/{item_uuid}",response_model=UserModel)
 async def get_user(request : Request,item_uuid :uuid.UUID,current_user :UserModelLogin = Depends(get_current_active_user),session : AsyncSession=Depends(get_session)):

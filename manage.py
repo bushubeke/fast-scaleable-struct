@@ -1,5 +1,3 @@
-from ast import Try
-from typing import Callable
 import typer
 import asyncio
 import subprocess
